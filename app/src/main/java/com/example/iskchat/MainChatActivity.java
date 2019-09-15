@@ -3,19 +3,21 @@ package com.example.iskchat;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +26,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 
 public class MainChatActivity extends AppCompatActivity {
 
@@ -31,128 +37,136 @@ public class MainChatActivity extends AppCompatActivity {
     private String mDisplayName="anyone";
     private ListView mChatListView;
     private EditText mInputText;
-    private TextView user_tool;
+    private TextView username;
+    private ImageView profile_image;
     private ImageButton mSendButton;
-    private DatabaseReference mDatabaseReference;
-    private DatabaseReference reference;
-    private FirebaseAuth mAuth;
-    private ChatListAdapter mAdapter;
+    private Intent intent;
+
+    private DatabaseReference reference,mDatabaseReference;
+    private FirebaseUser fuser;
+
+     ChatAdapter chatAdapter;
+     List<Chat> mchat;
+     RecyclerView recyclerView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_chat);
 
         // TODO: Set up the display name and get the Firebase reference
-       setupDisplayName();
+
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
 
         // Link the Views in the layout to the Java code
         mInputText = (EditText) findViewById(R.id.messageInput);
         mSendButton = (ImageButton) findViewById(R.id.sendButton);
-        mChatListView = (ListView) findViewById(R.id.chat_list_view);
-        user_tool=(TextView) findViewById(R.id.tool_user) ;
+        //mChatListView = (ListView) findViewById(R.id.chat_list_view);
+        username=(TextView) findViewById(R.id.username) ;
+        profile_image=findViewById(R.id.profile_image);
 
-        // TODO: Send the message when the "enter" button is pressed
-        mInputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        recyclerView=findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
 
-                sendMessage();
-                return true;
-            }
-        });
 
-        // TODO: Add an OnClickListener to the sendButton to send a message
+        intent=getIntent();
+       final String userid=intent.getStringExtra("userid");
+       fuser = FirebaseAuth.getInstance().getCurrentUser();
+//Send Message
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                sendMessage();
+            public void onClick(View view) {
+                String msg = mInputText.getText().toString();
+                if(!msg.equals("")){
+                      sendMessage(fuser.getUid(),userid,msg);
+                }
+                else {
+                    Toast.makeText(MainChatActivity.this,"You can't send empty message",Toast.LENGTH_SHORT).show();
+                }
+                mInputText.setText("");
             }
         });
 
+        reference=FirebaseDatabase.getInstance().getReference("Users").child(userid);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                User user=dataSnapshot.getValue(User.class);
+                mDisplayName=user.getUsername();
+
+                username.setText(mDisplayName);
+                if (user.getImageURL().equals("default")){
+                   profile_image.setImageResource(R.mipmap.man);
+
+                }
+else
+                Glide.with(MainChatActivity.this).load(user.getImageURL()).into(profile_image);
+                 display(fuser.getUid(),userid,user.getImageURL());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
-    // TODO: Retrieve the display name from the Shared Preferences
-    private void setupDisplayName(){
-        FirebaseUser firebaseUser =mAuth.getInstance().getCurrentUser();
-        if(firebaseUser!=null) {
-            String userid=firebaseUser.getUid();
-             reference= FirebaseDatabase.getInstance().getReference("Users").child(userid);
-             reference.addValueEventListener(new ValueEventListener() {
-                 @Override
-                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                     User user=dataSnapshot.getValue(User.class);
-                     mDisplayName=user.getUsername();
-                     user_tool.setText(mDisplayName);
 
-
-                 }
-
-                 @Override
-                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                 }
-             });
-            //  SharedPreferences prefs = getSharedPreferences(LoginActivity.CHAT_PREFS, MODE_PRIVATE);
-         //   mDisplayName = firebaseUser.getDisplayName();
-            // mDisplayName = prefs.getString(LoginActivity.DISPLAY_NAME_KEY, null);
-        }
-        if (mDisplayName == null) mDisplayName = "AnnyOne";
-    }
-
-
-
-    private void sendMessage() {
+    private void sendMessage(String sender,String reciver,String message) {
 
        // Log.d("FlashChat", "I sent something");
         // TODO: Grab the text the user typed in and push the message to Firebase
-        String input = mInputText.getText().toString();
-        if (!input.equals("")) {
-           InstantMessage chat = new InstantMessage(input, mDisplayName);
-            mDatabaseReference.child("New").push().setValue(chat);
-            mInputText.setText("");
-        }
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
+        HashMap<String,Object> hashMap = new HashMap<>();
+        hashMap.put("sender",sender);
+        hashMap.put("reciver",reciver);
+        hashMap.put("message",message);
 
+        reference.child("Chat").push().setValue(hashMap);
+
+
+    }
+    public void display(final String myid, final String userid, final String imageurl){
+        mchat = new ArrayList<>();
+       reference =FirebaseDatabase.getInstance().getReference("Chat");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+              mchat.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Chat chat = snapshot.getValue(Chat.class);
+                    if(chat.getReciver().equals(myid)&&chat.getSender().equals(userid)||
+                    chat.getReciver().equals(userid)&&chat.getSender().equals(myid)){
+                        mchat.add(chat);
+                    }
+                 chatAdapter = new ChatAdapter(MainChatActivity.this,mchat,imageurl);
+                   recyclerView.setAdapter(chatAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
-
-    // TODO: Override the onStart() lifecycle method. Setup the adapter here.
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAdapter = new ChatListAdapter(this,mDatabaseReference,mDisplayName);
-        mChatListView.setAdapter(mAdapter);
-    }
-
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // TODO: Remove the Firebase event listener on the adapter.
-       mAdapter.cleanup();
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.logout:
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(this, LoginActivity.class));
-        }
-        return true;
-    }
 }

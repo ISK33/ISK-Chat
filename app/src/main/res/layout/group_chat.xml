@@ -9,10 +9,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/light_purple"
     tools:context="com.">
-<com.google.android.material.appbar.AppBarLayout
-    android:id="@+id/bar_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -21,30 +17,35 @@
         android:background="#009688"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/profile_image"
-            android:src="@mipmap/ic_launcher"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/username"
-            android:layout_toRightOf="@id/profile_image"
-            android:layout_toEndOf="@id/profile_image"
-            android:layout_marginLeft="10dp"
-            android:layout_centerVertical="true"
-            android:textSize="18dp"/>
-    </androidx.appcompat.widget.Toolbar>
-</com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/bar_layout"
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/tool_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="31dp"
+        android:layout_marginLeft="31dp"
+        android:layout_marginTop="15dp"
+        android:text="TextView"
+        android:textColor="#DD0808"
+        android:textStyle="bold" />
+
+    />
+
+    <ListView
+        android:id="@+id/chat_list_view"
+        android:layout_width="wrap_content"
+        android:layout_height="612dp"
         android:layout_above="@+id/listFooter"
-        />
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="60dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:transcriptMode="alwaysScroll" />
 
     <LinearLayout
         android:id="@+id/listFooter"
