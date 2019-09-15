@@ -1,4 +1,4 @@
-package com.example.iskchat;
+package com.example.iskchat.Adapter;
 
 public class Chat {
 

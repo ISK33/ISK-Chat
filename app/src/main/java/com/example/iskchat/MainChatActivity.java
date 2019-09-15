@@ -1,4 +1,3 @@
-
 package com.example.iskchat;
 
 import android.content.Intent;
@@ -18,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.iskchat.Adapter.Chat;
+import com.example.iskchat.Adapter.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -45,9 +46,9 @@ public class MainChatActivity extends AppCompatActivity {
     private DatabaseReference reference,mDatabaseReference;
     private FirebaseUser fuser;
 
-     ChatAdapter chatAdapter;
-     List<Chat> mchat;
-     RecyclerView recyclerView;
+    ChatAdapter chatAdapter;
+    List<Chat> mchat;
+    RecyclerView recyclerView;
 
 
     @Override
@@ -83,15 +84,15 @@ public class MainChatActivity extends AppCompatActivity {
 
 
         intent=getIntent();
-       final String userid=intent.getStringExtra("userid");
-       fuser = FirebaseAuth.getInstance().getCurrentUser();
+        final  String userid=intent.getStringExtra("userid");
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
 //Send Message
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String msg = mInputText.getText().toString();
                 if(!msg.equals("")){
-                      sendMessage(fuser.getUid(),userid,msg);
+                    sendMessage(fuser.getUid(),userid,msg);
                 }
                 else {
                     Toast.makeText(MainChatActivity.this,"You can't send empty message",Toast.LENGTH_SHORT).show();
@@ -111,12 +112,12 @@ public class MainChatActivity extends AppCompatActivity {
 
                 username.setText(mDisplayName);
                 if (user.getImageURL().equals("default")){
-                   profile_image.setImageResource(R.mipmap.man);
+                    profile_image.setImageResource(R.mipmap.man);
 
                 }
-else
-                Glide.with(MainChatActivity.this).load(user.getImageURL()).into(profile_image);
-                 display(fuser.getUid(),userid,user.getImageURL());
+                else
+                    Glide.with(MainChatActivity.this).load(user.getImageURL()).into(profile_image);
+                display(fuser.getUid(),userid,user.getImageURL());
             }
 
             @Override
@@ -131,7 +132,7 @@ else
 
     private void sendMessage(String sender,String reciver,String message) {
 
-       // Log.d("FlashChat", "I sent something");
+        // Log.d("FlashChat", "I sent something");
         // TODO: Grab the text the user typed in and push the message to Firebase
         DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
         HashMap<String,Object> hashMap = new HashMap<>();
@@ -140,24 +141,40 @@ else
         hashMap.put("message",message);
 
         reference.child("Chat").push().setValue(hashMap);
+        final String userid=intent.getStringExtra("userid");
+   final     DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
+                .child(fuser.getUid())
+                .child(userid);
+chatRef.addValueEventListener(new ValueEventListener() {
+    @Override
+    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        if (!dataSnapshot.exists()){
+            chatRef.child("id").setValue(userid);
+        }
+    }
 
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+    }
+});
 
     }
     public void display(final String myid, final String userid, final String imageurl){
         mchat = new ArrayList<>();
-       reference =FirebaseDatabase.getInstance().getReference("Chat");
+        reference =FirebaseDatabase.getInstance().getReference("Chat");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-              mchat.clear();
+                mchat.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Chat chat = snapshot.getValue(Chat.class);
                     if(chat.getReciver().equals(myid)&&chat.getSender().equals(userid)||
-                    chat.getReciver().equals(userid)&&chat.getSender().equals(myid)){
+                            chat.getReciver().equals(userid)&&chat.getSender().equals(myid)){
                         mchat.add(chat);
                     }
-                 chatAdapter = new ChatAdapter(MainChatActivity.this,mchat,imageurl);
-                   recyclerView.setAdapter(chatAdapter);
+                    chatAdapter = new ChatAdapter(MainChatActivity.this,mchat,imageurl);
+                    recyclerView.setAdapter(chatAdapter);
                 }
             }
 
