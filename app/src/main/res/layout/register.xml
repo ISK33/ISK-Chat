@@ -3,44 +3,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:visibility="visible"
-    android:background="@drawable/green"
+    android:background="@color/colorPrimaryDark"
     tools:context="com.example.iskchat.RegisterActivity"
     tools:visibility="visible">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimaryDark"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="100dp"
+        android:padding="16dp">
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Creat New Account"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
     <EditText
         android:id="@+id/user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginStart="-1dp"
-        android:layout_marginLeft="-1dp"
-        android:layout_marginTop="142dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginTop="30dp"
         android:autofillHints="username"
-        android:ems="10"
         android:hint="User name"
         android:inputType="textPersonName"
-        android:textColor="#E91E63"
+        android:textColor="#1B1A1A"
          />
 
     <EditText
         android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="230dp"
-        android:ems="10"
+        android:layout_marginTop="10dp"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:textColor="#E91E63"
+        android:textColor="#1B1A1A"
        />
 
 
@@ -48,53 +59,36 @@
         android:id="@+id/passwd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="305dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginRight="2dp"
+        android:layout_marginTop="10dp"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
-        android:textColor="#E91E63"
+        android:textColor="#1B1A1A"
   />
 
     <EditText
         android:id="@+id/cpasswd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="396dp"
-        android:ems="10"
+        android:layout_marginTop="10dp"
         android:hint="Confirm Password"
         android:imeActionLabel="@string/action_sign_up"
         android:imeOptions="actionUnspecified"
         android:inputType="textPassword"
-        android:maxLines="1"
-        android:textColor="#E91E63"
+        android:textColor="#1B1A1A"
 
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_alignParentLeft="true" />
 
     <Button
         android:id="@+id/bt-signup"
         style="@android:style/Widget.Holo.Button"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:layout_below="@+id/cpasswd"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="92dp"
-        android:layout_marginLeft="92dp"
-        android:layout_marginTop="58dp"
-        android:layout_marginBottom="193dp"
+        android:layout_marginTop="10dp"
         android:onClick="signUp"
         android:text="Sign Up" />
+
+    </LinearLayout>
 
 </RelativeLayout>

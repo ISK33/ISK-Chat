@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,9 +47,17 @@ public class MainChatActivity extends AppCompatActivity {
     private DatabaseReference reference,mDatabaseReference;
     private FirebaseUser fuser;
 
+    //image
+    private View mImageContainer;
+    private TextView mImaageText;
+    private ProgressBar mUploadProgressBar;
+    private TextView mDonloadUrlTextView;
+
     ChatAdapter chatAdapter;
     List<Chat> mchat;
     RecyclerView recyclerView;
+
+    ValueEventListener seenListner;
 
 
     @Override
@@ -56,7 +65,6 @@ public class MainChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_chat);
 
-        // TODO: Set up the display name and get the Firebase reference
 
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -65,7 +73,7 @@ public class MainChatActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+finish();
             }
         });
 
@@ -80,6 +88,7 @@ public class MainChatActivity extends AppCompatActivity {
         recyclerView=findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
 
@@ -116,7 +125,7 @@ public class MainChatActivity extends AppCompatActivity {
 
                 }
                 else
-                    Glide.with(MainChatActivity.this).load(user.getImageURL()).into(profile_image);
+                    Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
                 display(fuser.getUid(),userid,user.getImageURL());
             }
 
@@ -126,9 +135,28 @@ public class MainChatActivity extends AppCompatActivity {
             }
         });
 
-
+        seenMessage(userid);
     }
+private void seenMessage(final String userid){
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        seenListner = reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Chat chat = snapshot.getValue(Chat.class);
+                    if (chat.getReciver().equals(fuser.getUid())&& chat.getSender().equals(userid)){
+                        HashMap<String,Object> hashMap = new HashMap<>();
+                        snapshot.getRef().updateChildren(hashMap);
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+}
 
     private void sendMessage(String sender,String reciver,String message) {
 
@@ -139,10 +167,11 @@ public class MainChatActivity extends AppCompatActivity {
         hashMap.put("sender",sender);
         hashMap.put("reciver",reciver);
         hashMap.put("message",message);
+        hashMap.put("seen",false);
 
-        reference.child("Chat").push().setValue(hashMap);
+        reference.child("Chats").push().setValue(hashMap);
         final String userid=intent.getStringExtra("userid");
-   final     DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
+   final     DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("ChatList")
                 .child(fuser.getUid())
                 .child(userid);
 chatRef.addValueEventListener(new ValueEventListener() {
@@ -162,7 +191,7 @@ chatRef.addValueEventListener(new ValueEventListener() {
     }
     public void display(final String myid, final String userid, final String imageurl){
         mchat = new ArrayList<>();
-        reference =FirebaseDatabase.getInstance().getReference("Chat");
+        reference =FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -185,5 +214,26 @@ chatRef.addValueEventListener(new ValueEventListener() {
         });
     }
 
+    public void status(String sttatus){
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
 
+        HashMap<String,Object> hashMap = new HashMap<>();
+        hashMap.put("status",sttatus);
+
+        reference.updateChildren(hashMap);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        status("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        reference.removeEventListener(seenListner);
+        status("offline");
+    }
 }

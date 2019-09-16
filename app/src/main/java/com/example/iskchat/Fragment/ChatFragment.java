@@ -45,16 +45,16 @@ public class ChatFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         userList = new ArrayList<>();
-       fuser = FirebaseAuth.getInstance().getCurrentUser();
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
 
-    reference= FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid());
-       reference.addValueEventListener(new ValueEventListener() {
+        reference= FirebaseDatabase.getInstance().getReference("ChatList").child(fuser.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userList.clear();
-              for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Chatlist chatlist = snapshot.getValue(Chatlist.class);
-                  userList.add(chatlist);
+                    userList.add(chatlist);
                 }
                 chatList();
             }
@@ -82,7 +82,7 @@ public class ChatFragment extends Fragment {
                         }
                     }
                 }
-                userAdapter = new UserAdapter(getContext(),musers);
+                userAdapter = new UserAdapter(getContext(),musers,true);
                 recyclerView.setAdapter(userAdapter);
             }
 
@@ -94,6 +94,4 @@ public class ChatFragment extends Fragment {
     }
 
 }
-
-
 

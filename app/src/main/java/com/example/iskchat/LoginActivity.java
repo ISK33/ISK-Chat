@@ -42,19 +42,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         intent = new Intent();
         super.onCreate(savedInstanceState);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if(user!=null){
-
-            intent.setClass(this,MainAdapter.class);
-        finish();
-      startActivity(intent);
-           }
-        else
-            setContentView(R.layout.login);
-
+        setContentView(R.layout.login);
         mEmailView = (EditText) findViewById(R.id.Email);
         mPasswordView = (EditText) findViewById(R.id.log_pass);
+
+
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override

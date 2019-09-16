@@ -38,7 +38,7 @@
         android:layout_marginTop="0dp"
         android:background="@color/colorPrimaryDark"
         app:tabIndicatorColor="@color/colorPrimaryDark"
-        app:tabSelectedTextColor="@color/colorPrimaryDark"
+        app:tabSelectedTextColor="@color/white"
         app:tabTextColor="#311B92"
         />
 

@@ -54,6 +54,15 @@
         android:orientation="horizontal"
         android:gravity="bottom">
 
+        <ImageButton
+            android:id="@+id/image_container"
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/circle_shape"
+            android:contentDescription="@string/action_send"
+            android:src="@android:drawable/ic_dialog_dialer" />
+
         <EditText
             android:id="@+id/messageInput"
             android:layout_width="0dp"
@@ -76,6 +85,7 @@
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_send"
             android:contentDescription="@string/action_send"/>
+
     </LinearLayout>
 
 

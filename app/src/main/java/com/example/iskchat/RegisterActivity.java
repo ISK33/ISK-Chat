@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -48,6 +47,8 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
+
+
 
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.passwd);
@@ -144,12 +145,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d("FlashChat", "createUser onComplete: " + task.isSuccessful());
 
-                        if(!task.isSuccessful()){
-                            Log.d("FlashChat", "user creation failed");
-                            showErrorDialog("Registration attempt failed");
-                        } else {
+
                             FirebaseUser firebaseUser =mAuth.getCurrentUser();
                             String userid=firebaseUser.getUid();
                             reference= FirebaseDatabase.getInstance().getReference("Users").child(userid);
@@ -161,10 +158,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(task.isSuccessful()){
-                                     //   Toast.makeText(this, "SignUp in progress...", Toast.LENGTH_SHORT).show();
-
-                                        Intent intent = new Intent(RegisterActivity.this, MainChatActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        Intent intent = new Intent(RegisterActivity.this, StartPage.class);
                                         startActivity(intent);
                                         finish();
 
@@ -172,11 +166,9 @@ public class RegisterActivity extends AppCompatActivity {
                                 }
                             });
                            // saveDisplayName();
-                            //Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                         //   finish();
-                          //  startActivity(intent);
+
                         }
-                    }
+
                 });
     }
 
