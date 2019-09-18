@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -61,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // TODO: Grab an instance of FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
+        reference=FirebaseDatabase.getInstance().getReference().child("Users");
 
     }
 
@@ -99,10 +101,23 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("FlashChat", "Problem signing in: " + task.getException());
                     showErrorDialog("There was a problem signing in");
                 } else {
+                    String userid = mAuth.getCurrentUser().getUid();
+                    String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                    reference.child(userid).child("device_token")
+                            .setValue(deviceToken)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()){
 
-                    intent = new Intent(LoginActivity.this, MainAdapter.class);
-                    finish();
-                    startActivity(intent);
+                                        intent = new Intent(LoginActivity.this, MainAdapter.class);
+                                        finish();
+                                        startActivity(intent);
+                                    }
+                                }
+                            });
+
+
                 }
 
             }

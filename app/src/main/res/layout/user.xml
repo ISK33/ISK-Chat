@@ -51,5 +51,15 @@
         android:src="@mipmap/ic_launcher"
         app:civ_border_color="#bfbfbf"
         app:civ_border_width="10dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/profile_image"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/username"
+        android:id="@+id/last_msg"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_marginLeft="20dp"
+        android:maxLines="1"/>
 
 </RelativeLayout>

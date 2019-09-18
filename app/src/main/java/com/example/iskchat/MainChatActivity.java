@@ -7,7 +7,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,9 +27,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MainChatActivity extends AppCompatActivity {
@@ -44,18 +46,16 @@ public class MainChatActivity extends AppCompatActivity {
     private ImageButton mSendButton;
     private Intent intent;
 
-    private DatabaseReference reference,mDatabaseReference;
+    private DatabaseReference reference;
     private FirebaseUser fuser;
 
-    //image
-    private View mImageContainer;
-    private TextView mImaageText;
-    private ProgressBar mUploadProgressBar;
-    private TextView mDonloadUrlTextView;
+
 
     ChatAdapter chatAdapter;
     List<Chat> mchat;
+    Chat chat;
     RecyclerView recyclerView;
+    String msgTime;
 
     ValueEventListener seenListner;
 
@@ -73,7 +73,7 @@ public class MainChatActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-finish();
+                finish();
             }
         });
 
@@ -95,13 +95,17 @@ finish();
         intent=getIntent();
         final  String userid=intent.getStringExtra("userid");
         fuser = FirebaseAuth.getInstance().getCurrentUser();
+
 //Send Message
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String msg = mInputText.getText().toString();
                 if(!msg.equals("")){
-                    sendMessage(fuser.getUid(),userid,msg);
+                    msgTime= new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                   // chat.setMsgTime(msgTime);
+
+                    sendMessage(fuser.getUid(),userid,msg,msgTime);
                 }
                 else {
                     Toast.makeText(MainChatActivity.this,"You can't send empty message",Toast.LENGTH_SHORT).show();
@@ -137,7 +141,7 @@ finish();
 
         seenMessage(userid);
     }
-private void seenMessage(final String userid){
+    private void seenMessage(final String userid){
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         seenListner = reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -146,6 +150,7 @@ private void seenMessage(final String userid){
                     Chat chat = snapshot.getValue(Chat.class);
                     if (chat.getReciver().equals(fuser.getUid())&& chat.getSender().equals(userid)){
                         HashMap<String,Object> hashMap = new HashMap<>();
+                        hashMap.put("seen",true);
                         snapshot.getRef().updateChildren(hashMap);
                     }
                 }
@@ -156,9 +161,9 @@ private void seenMessage(final String userid){
 
             }
         });
-}
+    }
 
-    private void sendMessage(String sender,String reciver,String message) {
+    private void sendMessage(String sender,String reciver,String message,String msgTime) {
 
         // Log.d("FlashChat", "I sent something");
         // TODO: Grab the text the user typed in and push the message to Firebase
@@ -168,25 +173,26 @@ private void seenMessage(final String userid){
         hashMap.put("reciver",reciver);
         hashMap.put("message",message);
         hashMap.put("seen",false);
+        hashMap.put("time",msgTime);
 
         reference.child("Chats").push().setValue(hashMap);
         final String userid=intent.getStringExtra("userid");
-   final     DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("ChatList")
+        final     DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("ChatList")
                 .child(fuser.getUid())
                 .child(userid);
-chatRef.addValueEventListener(new ValueEventListener() {
-    @Override
-    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-        if (!dataSnapshot.exists()){
-            chatRef.child("id").setValue(userid);
-        }
-    }
+        chatRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()){
+                    chatRef.child("id").setValue(userid);
+                }
+            }
 
-    @Override
-    public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-    }
-});
+            }
+        });
 
     }
     public void display(final String myid, final String userid, final String imageurl){

@@ -4,17 +4,14 @@
     android:layout_height="wrap_content"
     android:padding="8dp"
     >
-    <RelativeLayout
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true">
+
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/profile_image"
         android:visibility="gone"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,14 +22,24 @@
         android:background="@drawable/b_right"
         android:textColor="#fff"
         android:text="hello"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentRight="true"/>
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/msg_time"
+            android:text="Date"
+            android:layout_below="@id/show_message"
+            android:layout_alignParentRight="true"
+            />
+
+        <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txt_seen"
             android:layout_below="@id/show_message"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"/>
-    </RelativeLayout>
+            android:layout_toLeftOf="@id/msg_time"
+            android:src="@mipmap/clock"
+
+       />
 
 </RelativeLayout>

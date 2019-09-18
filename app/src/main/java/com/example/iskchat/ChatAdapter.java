@@ -14,6 +14,8 @@ import com.bumptech.glide.Glide;
 import com.example.iskchat.Adapter.Chat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -24,6 +26,8 @@ public class ChatAdapter extends   RecyclerView.Adapter<ChatAdapter.ViewHolder> 
     public static final int type_left = 0;
     public static final int type_right = 1;
     private String imageurl;
+    private DatabaseReference reference;
+
     FirebaseUser fuser;
 
 
@@ -35,7 +39,7 @@ public class ChatAdapter extends   RecyclerView.Adapter<ChatAdapter.ViewHolder> 
 
     @NonNull
     @Override
-    public  ChatAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public  ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType==type_right) {
             View view = LayoutInflater.from(mcontext).inflate(R.layout.chat_right, parent, false);
             return new ChatAdapter.ViewHolder(view);
@@ -47,23 +51,27 @@ public class ChatAdapter extends   RecyclerView.Adapter<ChatAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         Chat chat = mchat.get(position);
         holder.show_message.setText(chat.getMessage());
+        holder.msg_time.setText(chat.getTime());
+
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+
+
+
         if (imageurl.equals("default")){
             holder.profile_image.setImageResource(R.mipmap.man);
         }
         else
             Glide.with(mcontext).load(imageurl).into(holder.profile_image);
-        if (position == mchat.size()-1){
             if (chat.isSeen()){
-                holder.txt_seen.setText("Seen");
+                holder.txt_seen.setImageResource(R.mipmap.seen);
             }
             else
-                holder.txt_seen.setText("Delivered");
-        }else {
-            holder.txt_seen.setVisibility(View.GONE);
-        }
+                holder.txt_seen.setImageResource(R.mipmap.send);
+
+
     }
 
 
@@ -73,15 +81,16 @@ public class ChatAdapter extends   RecyclerView.Adapter<ChatAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView show_message;
-        public ImageView profile_image;
-        public TextView txt_seen;
+        public TextView show_message,msg_time;
+        public ImageView profile_image,txt_seen;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
             show_message = itemView.findViewById(R.id.show_message);
             profile_image = itemView.findViewById(R.id.profile_image);
             txt_seen = itemView.findViewById(R.id.txt_seen);
+            msg_time=itemView.findViewById(R.id.msg_time);
         }
     }
 

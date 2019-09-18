@@ -7,6 +7,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:id="@+id/profile_image"
+        android:visibility="gone"
         android:src="@mipmap/ic_launcher"/>
     <TextView
         android:layout_width="wrap_content"
@@ -21,9 +22,20 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/msg_time"
+        android:text="Date"
+        android:layout_below="@id/show_message"
+        android:layout_toRightOf="@id/show_message"
+        />
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/txt_seen"
         android:layout_below="@id/show_message"
+        android:layout_toLeftOf="@id/msg_time"
+        android:src="@mipmap/clock"
         android:visibility="gone"
+
         />
 
 </RelativeLayout>

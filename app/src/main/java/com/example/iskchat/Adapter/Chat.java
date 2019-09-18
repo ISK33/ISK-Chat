@@ -4,12 +4,14 @@ public class Chat {
 
     private String  sender, reciver,message;
     private boolean seen;
+    private String time;
 
-    public Chat( String sender, String reciver,String message,boolean seen) {
+    public Chat( String sender, String reciver,String message,boolean seen,String time) {
         this.message = message;
         this.sender = sender;
         this.reciver = reciver;
         this.seen = seen;
+        this.time=time;
     }
 
     public Chat() {
@@ -46,5 +48,13 @@ public class Chat {
 
     public void setSeen(boolean seen) {
         this.seen = seen;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

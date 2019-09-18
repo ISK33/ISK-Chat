@@ -27,8 +27,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.core:core-ktx:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.core:core-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -38,15 +38,15 @@ dependencies {
     // Add the Firebase SDK for Google Analytics
 
     // Add the SDKs for any other Firebase products you want to use in your app
-    // For example, to use Firebase Authentication and Cloud Firestore
+    //to use Firebase Authentication and Cloud Firestore
     implementation 'com.google.firebase:firebase-analytics:17.2.0'
     implementation 'com.google.firebase:firebase-auth:19.0.0'
-    implementation 'com.google.firebase:firebase-database:19.0.0'
+    implementation 'com.google.firebase:firebase-database:19.1.0'
     implementation 'com.google.firebase:firebase-storage:19.0.1'
 
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.android.support:design:28.0.0'
-    implementation 'com.android.support:appcompat-v7:28.0.0-alpha1'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:customtabs:28.0.0'
     implementation 'com.android.support:support-vector-drawable:28.0.0'
     implementation 'com.android.support:support-media-compat:28.0.0'
@@ -54,6 +54,11 @@ dependencies {
     // Glide v4 uses this new annotation processor -- see https://bumptech.github.io/glide/doc/generatedapi.html
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    //nofication
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+
     // Getting a "Could not find" error? Make sure that you've added
     // Google's Maven repository to your root-level build.gradle file
 }
