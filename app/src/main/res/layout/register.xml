@@ -32,53 +32,57 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold" />
-    <EditText
-        android:id="@+id/user"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:autofillHints="username"
-        android:hint="User name"
-        android:inputType="textPersonName"
-        android:textColor="#1B1A1A"
-         />
 
-    <EditText
-        android:id="@+id/email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="10dp"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
-        android:textColor="#1B1A1A"
-       />
+        <EditText
+            android:id="@+id/user"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="30dp"
+            android:autofillHints="username"
+            android:background="@drawable/input_background"
+            android:textStyle="bold"
+            android:hint="   User name"
+            android:inputType="textPersonName"
+            android:textColor="#1B1A1A" />
+
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/input_background"
+            android:textStyle="bold"
+            android:hint="   Email"
+            android:inputType="textEmailAddress"
+            android:textColor="#1B1A1A" />
 
 
-    <EditText
-        android:id="@+id/passwd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:textColor="#1B1A1A"
-  />
+        <EditText
+            android:id="@+id/passwd"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/input_background"
+            android:ems="10"
+            android:hint="   Password"
+            android:textStyle="bold"
+            android:inputType="textPassword"
+            android:textColor="#1B1A1A" />
 
-    <EditText
-        android:id="@+id/cpasswd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="Confirm Password"
-        android:imeActionLabel="@string/action_sign_up"
-        android:imeOptions="actionUnspecified"
-        android:inputType="textPassword"
-        android:textColor="#1B1A1A"
-
-        android:textStyle="bold"
-        android:layout_alignParentLeft="true" />
+        <EditText
+            android:id="@+id/cpasswd"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/input_background"
+            android:hint="   Confirm Password"
+            android:imeActionLabel="@string/action_sign_up"
+            android:imeOptions="actionUnspecified"
+            android:inputType="textPassword"
+            android:textColor="#1B1A1A"
+            android:textStyle="bold" />
 
     <Button
         android:id="@+id/bt-signup"
@@ -86,6 +90,7 @@
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
+        android:background="@drawable/button_back"
         android:onClick="signUp"
         android:text="Sign Up" />
 

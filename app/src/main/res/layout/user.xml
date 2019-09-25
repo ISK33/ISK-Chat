@@ -33,7 +33,7 @@
         android:layout_marginTop="-6dp"
         android:layout_toEndOf="@id/profile_image"
         android:layout_toRightOf="@id/profile_image"
-        android:src="@mipmap/ic_launcher"
+        android:src="@mipmap/man"
         app:civ_border_color="#05df29"
         app:civ_border_width="10dp" />
 
@@ -61,5 +61,19 @@
         android:textColor="@color/colorPrimaryDark"
         android:layout_marginLeft="20dp"
         android:maxLines="1"/>
+
+    <TextView
+        android:id="@+id/unread"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="11dp"
+        android:gravity="center"
+        android:background="@drawable/txtview_cricle"
+        android:layout_marginRight="11dp"
+        android:text="0" />
 
 </RelativeLayout>

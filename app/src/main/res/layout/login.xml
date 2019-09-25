@@ -31,27 +31,32 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold" />
+
     <EditText
         android:id="@+id/Email"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="52dp"
         android:layout_marginTop="30dp"
-        android:hint="Email"
+        android:background="@drawable/input_background"
+        android:hint="   Email"
         android:inputType="textEmailAddress"
         android:textColor="#111011" />
 
     <EditText
         android:id="@+id/log_pass"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="53dp"
         android:layout_marginTop="10dp"
-        android:hint="Password"
+        android:background="@drawable/input_background"
+        android:hint="   Password"
         android:inputType="textPassword"
         android:textColor="#111011" />
 
     <Button
         android:id="@+id/button"
         style="@android:style/Widget.Holo.Button"
+        android:background="@drawable/button_back"
+        android:textColor="@color/black"
         android:layout_width="221dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -61,6 +66,9 @@
     <Button
         android:id="@+id/button2"
         style="@android:style/Widget.Holo.Button"
+        android:background="@drawable/button_back"
+        android:textColor="@color/black"
+
         android:layout_width="221dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"

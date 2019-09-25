@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -35,6 +36,7 @@ public class ChatFragment extends Fragment {
     FirebaseUser fuser;
     DatabaseReference reference;
     private List<Chatlist> userList;
+    TextView unread;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,6 +59,7 @@ public class ChatFragment extends Fragment {
                     userList.add(chatlist);
                 }
                 chatList();
+
             }
 
             @Override
@@ -81,6 +84,7 @@ public class ChatFragment extends Fragment {
                             musers.add(user);
                         }
                     }
+
                 }
                 userAdapter = new UserAdapter(getContext(),musers,true);
                 recyclerView.setAdapter(userAdapter);

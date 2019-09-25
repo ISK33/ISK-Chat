@@ -38,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     private boolean check;
     private boolean check1=true;
     private Intent intent;
+ static    String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
     // TODO: Complete the attemptLogin() method
     private void attemptLogin() {
 
-        String email = mEmailView.getText().toString();
+         email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         if (email.isEmpty())

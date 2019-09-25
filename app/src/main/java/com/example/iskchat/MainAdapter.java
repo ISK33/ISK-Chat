@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.example.iskchat.Adapter.Chat;
 import com.example.iskchat.Adapter.User;
 import com.example.iskchat.Fragment.ChatFragment;
 import com.example.iskchat.Fragment.ProfileFragment;
@@ -30,28 +31,35 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.onesignal.OneSignal;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class MainAdapter extends AppCompatActivity {
-    private TextView user_tool, username;
+    private TextView  username;
     private ImageView profile_image;
     private DatabaseReference reference;
     private FirebaseUser fuser;
+    protected static String myName;
+ static    String localTime,current_date;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         username = (TextView) findViewById(R.id.username);
         profile_image = (ImageView) findViewById(R.id.profile_image);
-        TabLayout tabLayout = findViewById(R.id.tablayout);
-        ViewPager viewPager = findViewById(R.id.view);
+        final TabLayout tabLayout = findViewById(R.id.tablayout);
+        final ViewPager viewPager = findViewById(R.id.view);
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
 
-        Toolbar toolbar=(Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -61,6 +69,23 @@ public class MainAdapter extends AppCompatActivity {
                 finish();
             }
         });
+        localTime= new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+
+
+        SimpleDateFormat  currentTime= new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat currentDate =new SimpleDateFormat("MMM dd, yyyy",Locale.ENGLISH);
+        current_date=currentDate.format(calendar.getTime());
+        localTime=currentTime.format(calendar.getTime());
+
+
+        OneSignal.startInit(this)
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                .unsubscribeWhenNotificationsAreDisabled(true)
+                .init();
+
+OneSignal.sendTag("User_ID",fuser.getUid());
+
       reference=FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -68,7 +93,8 @@ public class MainAdapter extends AppCompatActivity {
 
 
                 User user=dataSnapshot.getValue(User.class);
-                username.setText(user.getUsername());
+                myName=user.getUsername();
+                username.setText(myName);
                 if (user.getImageURL().equals("default")){
                     profile_image.setImageResource(R.mipmap.man);
 
@@ -84,12 +110,41 @@ public class MainAdapter extends AppCompatActivity {
         });
 
 
-        viewPagerAdapter viewPagerAdapter = new viewPagerAdapter(getSupportFragmentManager());
-       viewPagerAdapter.addFragment(new ChatFragment(), "Chat");
-        viewPagerAdapter.addFragment(new UsersFragment(), "Users");
-        viewPagerAdapter.addFragment(new ProfileFragment(), "Profile");
-        viewPager.setAdapter(viewPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
+
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                viewPagerAdapter viewPagerAdapter = new viewPagerAdapter(getSupportFragmentManager());
+
+                int unRead=0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Chat chat = snapshot.getValue(Chat.class);
+                    if ((chat.getReciver().equals(fuser.getUid())||chat.getSender().equals(fuser.getUid()))&& !chat.isSeen()){
+                        unRead++;
+
+                    }
+                }
+                if (unRead==0){
+                    viewPagerAdapter.addFragment(new ChatFragment(), "Chat");
+
+                }else {
+                    viewPagerAdapter.addFragment(new ChatFragment(), "("+unRead+")Chat");
+
+                }
+                viewPagerAdapter.addFragment(new UsersFragment(), "Users");
+                viewPagerAdapter.addFragment(new ProfileFragment(), "Profile");
+                viewPager.setAdapter(viewPagerAdapter);
+                tabLayout.setupWithViewPager(viewPager);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
 
     }
@@ -140,7 +195,7 @@ public class MainAdapter extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                startActivity(new Intent(this, StartPage.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }
         return true;
     }
@@ -155,7 +210,7 @@ public class MainAdapter extends AppCompatActivity {
     }
 
     @Override
-   protected void onResume() {
+    protected void onResume() {
         super.onResume();
         status("online");
     }
@@ -163,6 +218,6 @@ public class MainAdapter extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        status("offline");
+        status(current_date+" "+localTime);
     }
 }

@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +48,8 @@ private StorageTask uploadTask;
 
 CircleImageView image_profile;
 TextView username;
+EditText editText;
+Button ok;
 
 DatabaseReference reference;
 FirebaseUser fuser;
@@ -59,6 +63,8 @@ StorageReference storageReference;
 
         image_profile = view.findViewById(R.id.profile_image);
         username = view.findViewById(R.id.username);
+        editText=view.findViewById(R.id.edit_username);
+        ok=view.findViewById(R.id.ok);
 
         storageReference = FirebaseStorage.getInstance().getReference("uploads");
 
@@ -88,6 +94,30 @@ StorageReference storageReference;
                 openImage();
             }
         });
+        username.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                username.setVisibility(View.GONE);
+                editText.setVisibility(View.VISIBLE);
+                ok.setVisibility(View.VISIBLE);
+                editText.setText(username.getText().toString());
+
+
+            }
+        });
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                editUserName(editText.getText().toString());
+
+                editText.setVisibility(View.GONE);
+                username.setVisibility(View.VISIBLE);
+                ok.setVisibility(View.GONE);
+
+            }
+        });
+
         return view;
     }
 
@@ -147,6 +177,13 @@ StorageReference storageReference;
                 }
             });
         } else {Toast.makeText(getContext(),"No image selected",Toast.LENGTH_SHORT).show();}
+    }
+    private void editUserName(String newName){
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
+        HashMap<String,Object> hashMap = new HashMap<>();
+        hashMap.put("username",newName);
+        reference.updateChildren(hashMap);
+
     }
 
     @Override

@@ -1,7 +1,10 @@
 package com.example.iskchat;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -19,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.iskchat.Adapter.Chat;
 import com.example.iskchat.Adapter.User;
+import com.example.iskchat.Notification.MyFirebaseMessagingService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,12 +31,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 
 
 public class MainChatActivity extends AppCompatActivity {
@@ -41,7 +49,7 @@ public class MainChatActivity extends AppCompatActivity {
     private String mDisplayName="anyone";
     private ListView mChatListView;
     private EditText mInputText;
-    private TextView username;
+    private TextView username,state;
     private ImageView profile_image;
     private ImageButton mSendButton;
     private Intent intent;
@@ -49,15 +57,18 @@ public class MainChatActivity extends AppCompatActivity {
     private DatabaseReference reference;
     private FirebaseUser fuser;
 
-
+MyFirebaseMessagingService notifcation;
 
     ChatAdapter chatAdapter;
     List<Chat> mchat;
     Chat chat;
     RecyclerView recyclerView;
     String msgTime;
-
+    String userid;
     ValueEventListener seenListner;
+    boolean reseiverState;
+    String localTime;
+    String current_date;
 
 
     @Override
@@ -84,6 +95,7 @@ public class MainChatActivity extends AppCompatActivity {
         //mChatListView = (ListView) findViewById(R.id.chat_list_view);
         username=(TextView) findViewById(R.id.username) ;
         profile_image=findViewById(R.id.profile_image);
+        state=(TextView)findViewById(R.id.state);
 
         recyclerView=findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -93,19 +105,26 @@ public class MainChatActivity extends AppCompatActivity {
 
 
         intent=getIntent();
-        final  String userid=intent.getStringExtra("userid");
-        fuser = FirebaseAuth.getInstance().getCurrentUser();
+         userid=intent.getStringExtra("userid");
+        String receiverName=intent.getStringExtra("username");
 
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
 //Send Message
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String msg = mInputText.getText().toString();
                 if(!msg.equals("")){
-                    msgTime= new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-                   // chat.setMsgTime(msgTime);
+                    ///Date
+                    SimpleDateFormat  currentTime= new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+                    Calendar calendar = Calendar.getInstance();
+                    SimpleDateFormat currentDate =new SimpleDateFormat("MMM dd, yyyy",Locale.ENGLISH);
+                     current_date=currentDate.format(calendar.getTime());
+                     localTime=currentTime.format(calendar.getTime());
 
-                    sendMessage(fuser.getUid(),userid,msg,msgTime);
+
+                    sendMessage(fuser.getUid(),userid,msg,localTime);
+                    sendNotification(userid,MainAdapter.myName);
                 }
                 else {
                     Toast.makeText(MainChatActivity.this,"You can't send empty message",Toast.LENGTH_SHORT).show();
@@ -121,6 +140,28 @@ public class MainChatActivity extends AppCompatActivity {
 
 
                 User user=dataSnapshot.getValue(User.class);
+                if(user.getStatus().equals("online")){
+                    reseiverState=true;
+                    state.setText("Online");
+                }else {
+                    reseiverState = false;
+                    String state_date = user.getStatus().toString();
+
+                      String  month= state_date.split(" ")[0];
+                    String  day= state_date.split(" ")[1];
+                    String  year= state_date.split(" ")[2];
+                    String  date= month+" "+day+" "+year;
+                    //int yesterday=Integer.parseInt(day)-1;
+
+                    String time=state_date.split(" ")[3];
+                        if (date.equals(MainAdapter.current_date))
+                        {
+                            state.setText("last seen at "+time);
+
+                        }
+                        else
+                        state.setText("last seen at "+state_date);
+                }
                 mDisplayName=user.getUsername();
 
                 username.setText(mDisplayName);
@@ -140,7 +181,9 @@ public class MainChatActivity extends AppCompatActivity {
         });
 
         seenMessage(userid);
+
     }
+
     private void seenMessage(final String userid){
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         seenListner = reference.addValueEventListener(new ValueEventListener() {
@@ -229,6 +272,84 @@ public class MainChatActivity extends AppCompatActivity {
         reference.updateChildren(hashMap);
 
     }
+    private void current(String userid){
+        SharedPreferences.Editor editor = getSharedPreferences("PREFS",MODE_PRIVATE).edit();
+        editor.putString("current",userid);
+        editor.apply();
+    }
+    private void sendNotification(final String Receiver, final String name)
+    {
+       if (!reseiverState) {
+           AsyncTask.execute(new Runnable() {
+               @Override
+               public void run() {
+                   int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                   if (SDK_INT > 8) {
+                       StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                               .permitAll().build();
+                       StrictMode.setThreadPolicy(policy);
+                       String send_email;
+
+                       //This is a Simple Logic to Send Notification different Device Programmatically....
+                       send_email = Receiver;
+
+
+                       try {
+                           String jsonResponse;
+
+                           URL url = new URL("https://onesignal.com/api/v1/notifications");
+                           HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                           con.setUseCaches(false);
+                           con.setDoOutput(true);
+                           con.setDoInput(true);
+
+                           con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                           con.setRequestProperty("Authorization", "Basic NDY2OWE1YWUtODZhZi00MzU5LTg4Y2EtMjEyN2MxNmE0ZDM4");
+                           con.setRequestMethod("POST");
+
+                           String strJsonBody = "{"
+                                   + "\"app_id\": \"157b8954-d041-4afa-9b56-3824f23dfd11\","
+
+                                   + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + send_email + "\"}],"
+
+                                   + "\"data\": {\"foo\": \"bar\"},"
+                                   + "\"contents\": {\"en\": \"New Message from  " + name + "\"}"
+                                   + "}";
+
+
+                           System.out.println("strJsonBody:\n" + strJsonBody);
+
+                           byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+                           con.setFixedLengthStreamingMode(sendBytes.length);
+
+
+                           OutputStream outputStream = con.getOutputStream();
+                           outputStream.write(sendBytes);
+
+
+                           int httpResponse = con.getResponseCode();
+                           System.out.println("httpResponse: " + httpResponse);
+
+                           if (httpResponse >= HttpURLConnection.HTTP_OK
+                                   && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
+                               Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
+                               jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                               scanner.close();
+                           } else {
+                               Scanner scanner = new Scanner(con.getErrorStream(), "UTF-8");
+                               jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                               scanner.close();
+                           }
+                           System.out.println("jsonResponse:\n" + jsonResponse);
+
+                       } catch (Throwable t) {
+                           t.printStackTrace();
+                       }
+                   }
+               }
+           });
+       }
+    }
 
     @Override
     protected void onResume() {
@@ -240,6 +361,6 @@ public class MainChatActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         reference.removeEventListener(seenListner);
-        status("offline");
+        status(current_date+" "+localTime);
     }
 }
