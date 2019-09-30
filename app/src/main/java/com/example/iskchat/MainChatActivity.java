@@ -61,14 +61,13 @@ MyFirebaseMessagingService notifcation;
 
     ChatAdapter chatAdapter;
     List<Chat> mchat;
-    Chat chat;
     RecyclerView recyclerView;
-    String msgTime;
     String userid;
     ValueEventListener seenListner;
     boolean reseiverState;
-    String localTime;
-    String current_date;
+    String localTime,current_date;
+    static int sort;
+
 
 
     @Override
@@ -219,6 +218,8 @@ MyFirebaseMessagingService notifcation;
         hashMap.put("time",msgTime);
 
         reference.child("Chats").push().setValue(hashMap);
+
+
         final String userid=intent.getStringExtra("userid");
         final     DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("ChatList")
                 .child(fuser.getUid())
@@ -236,6 +237,26 @@ MyFirebaseMessagingService notifcation;
 
             }
         });
+        final     DatabaseReference chatRef1 = FirebaseDatabase.getInstance().getReference("ChatList")
+                .child(userid)
+                .child(fuser.getUid());
+        chatRef1.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()){
+                    chatRef1.child("id").setValue(fuser.getUid());
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
 
     }
     public void display(final String myid, final String userid, final String imageurl){
@@ -361,6 +382,6 @@ MyFirebaseMessagingService notifcation;
     protected void onPause() {
         super.onPause();
         reference.removeEventListener(seenListner);
-        status(current_date+" "+localTime);
+        status(current_date);
     }
 }

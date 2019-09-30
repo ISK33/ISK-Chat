@@ -120,7 +120,8 @@ OneSignal.sendTag("User_ID",fuser.getUid());
                 int unRead=0;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Chat chat = snapshot.getValue(Chat.class);
-                    if ((chat.getReciver().equals(fuser.getUid())||chat.getSender().equals(fuser.getUid()))&& !chat.isSeen()){
+                    if (chat.getReciver().equals(fuser.getUid())&& !chat.isSeen()){
+
                         unRead++;
 
                     }
@@ -129,6 +130,7 @@ OneSignal.sendTag("User_ID",fuser.getUid());
                     viewPagerAdapter.addFragment(new ChatFragment(), "Chat");
 
                 }else {
+
                     viewPagerAdapter.addFragment(new ChatFragment(), "("+unRead+")Chat");
 
                 }
@@ -218,6 +220,6 @@ OneSignal.sendTag("User_ID",fuser.getUid());
     @Override
     protected void onPause() {
         super.onPause();
-        status(current_date+" "+localTime);
+        status(current_date);
     }
 }

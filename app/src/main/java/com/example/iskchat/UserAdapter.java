@@ -142,13 +142,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     unread.setVisibility(View.VISIBLE);
                     unread.setText(Integer.toString(msg_unRead));
 
+
                      }
                     if(chat.getReciver().equals(firebaseUser.getUid())&&chat.getSender().equals(userid)||
                             chat.getReciver().equals(userid)&&chat.getSender().equals(firebaseUser.getUid())){
                         lastMessage = chat.getMessage();
-
-
-
                     }
 
                 }

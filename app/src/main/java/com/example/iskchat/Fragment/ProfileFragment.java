@@ -88,6 +88,8 @@ StorageReference storageReference;
 
             }
         });
+        ok.setVisibility(View.GONE);
+
         image_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
