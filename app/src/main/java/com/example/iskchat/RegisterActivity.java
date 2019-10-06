@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -139,7 +140,7 @@ public class RegisterActivity extends AppCompatActivity {
         final String username=mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
 
-
+        Toast.makeText(this, "SIGN UP in progress...", Toast.LENGTH_SHORT).show();
 
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this,
                 new OnCompleteListener<AuthResult>() {
@@ -147,9 +148,7 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
-
-
-                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
                             String userid = firebaseUser.getUid();
                             String deviceToken = FirebaseInstanceId.getInstance().getToken();
                             reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);

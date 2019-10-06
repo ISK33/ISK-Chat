@@ -15,7 +15,6 @@ import com.example.iskchat.Adapter.Chat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -54,11 +53,7 @@ public class ChatAdapter extends   RecyclerView.Adapter<ChatAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         Chat chat = mchat.get(position);
         holder.show_message.setText(chat.getMessage());
-        holder.msg_time.setText(chat.getTime());
-
-        reference = FirebaseDatabase.getInstance().getReference("Chats");
-
-
+        holder.msg_time.setText(chat.getTime().split(" ")[3]);
 
         if (imageurl.equals("default")){
             holder.profile_image.setImageResource(R.mipmap.man);

@@ -46,7 +46,7 @@ public class MainAdapter extends AppCompatActivity {
     private DatabaseReference reference;
     private FirebaseUser fuser;
     protected static String myName;
- static    String localTime,current_date;
+    static    String localTime,current_date;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +74,7 @@ public class MainAdapter extends AppCompatActivity {
 
         SimpleDateFormat  currentTime= new SimpleDateFormat("HH:mm", Locale.ENGLISH);
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat currentDate =new SimpleDateFormat("MMM dd, yyyy",Locale.ENGLISH);
+        SimpleDateFormat currentDate =new SimpleDateFormat("dd MMM, yyyy HH:mm",Locale.ENGLISH);
         current_date=currentDate.format(calendar.getTime());
         localTime=currentTime.format(calendar.getTime());
 
@@ -84,9 +84,9 @@ public class MainAdapter extends AppCompatActivity {
                 .unsubscribeWhenNotificationsAreDisabled(true)
                 .init();
 
-OneSignal.sendTag("User_ID",fuser.getUid());
+        OneSignal.sendTag("User_ID",fuser.getUid());
 
-      reference=FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
+        reference=FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -223,3 +223,4 @@ OneSignal.sendTag("User_ID",fuser.getUid());
         status(current_date);
     }
 }
+

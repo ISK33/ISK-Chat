@@ -18,32 +18,35 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#009688"
+        android:background="@color/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:id="@+id/profile_image"
-            android:src="@mipmap/man"/>
+            android:src="@mipmap/man" />
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/username"
-            android:layout_toRightOf="@id/profile_image"
-            android:layout_toEndOf="@id/profile_image"
-            android:layout_marginLeft="10dp"
-            android:text="usert"
-            android:layout_centerVertical="true"
-            android:textSize="18dp"/>
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toEndOf="@id/profile_image"
+            android:layout_toRightOf="@id/profile_image"
+            android:text="user"
+            android:textSize="18dp" />
+
+        <TextView
             android:id="@+id/state"
-            android:textColor="@color/design_default_color_primary_dark"
-            android:layout_below="@id/username"
-            android:layout_marginTop="35dp"
-            android:textSize="12dp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="33dp"
+            android:padding="1dp"
+            android:textColor="@color/green"
+            android:textSize="12dp" />
     </androidx.appcompat.widget.Toolbar>
 </com.google.android.material.appbar.AppBarLayout>
 
@@ -64,7 +67,7 @@
         android:gravity="bottom">
 
         <ImageButton
-            android:id="@+id/image_container"
+            android:id="@+id/input"
             android:padding="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

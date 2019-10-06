@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iskchat.Adapter.Chatlist;
 import com.example.iskchat.Adapter.User;
+import com.example.iskchat.MainChatActivity;
 import com.example.iskchat.R;
 import com.example.iskchat.UserAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +36,9 @@ public class ChatFragment extends Fragment {
     FirebaseUser fuser;
     DatabaseReference reference;
     private List<Chatlist> userList;
+    int index = 0;
+    User user1;
+    boolean check;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,12 +51,12 @@ public class ChatFragment extends Fragment {
         userList = new ArrayList<>();
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
-        reference= FirebaseDatabase.getInstance().getReference("ChatList").child(fuser.getUid());
+        reference = FirebaseDatabase.getInstance().getReference("ChatList").child(fuser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chatlist chatlist = snapshot.getValue(Chatlist.class);
                     userList.add(chatlist);
                 }
@@ -70,26 +74,41 @@ public class ChatFragment extends Fragment {
 
     private void chatList() {
         musers = new ArrayList<>();
-        reference =FirebaseDatabase.getInstance().getReference("Users");
+
+        reference = FirebaseDatabase.getInstance().getReference("Users");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 musers.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    for (Chatlist chatlist : userList){
-                        if (user.getId().equals(chatlist.getId())){
+                    for (Chatlist chatlist : userList) {
+                        if (user.getId().equals(chatlist.getId())) {
                             musers.add(user);
                         }
+
+                        if (user.getId().equals(MainChatActivity.firstUser)) {
+                            index = musers.indexOf(user);
+                            user1 = user;
+                            check = true;
+
+                        }
+
                     }
 
-                  // // int index = musers.indexOf(user);
-                   // musers.remove(index);
-                   // musers.add(user);
+                    userAdapter = new UserAdapter(getContext(), musers, true);
+                    recyclerView.setAdapter(userAdapter);
 
                 }
-                userAdapter = new UserAdapter(getContext(),musers,true);
-                recyclerView.setAdapter(userAdapter);
+                if (check) {
+                    musers.remove(index);
+                    musers.add(0, user1);
+                    check=false;
+                }
+
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+
             }
 
             @Override
@@ -99,4 +118,22 @@ public class ChatFragment extends Fragment {
         });
     }
 
+    private void sort() {
+        for (User user : musers) {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+
+    }
 }

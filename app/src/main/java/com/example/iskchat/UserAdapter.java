@@ -28,11 +28,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private Context mcontext;
     private List<User> mUser;
     private boolean ischat;
-    private FirebaseUser fuser;
     int msg_unRead = 0;
-
-
-    DatabaseReference reference;
+    public  static  String firstUser=" ";
 
     String lastMessage;
     public UserAdapter(Context mcontext,List<User> mUser,boolean ischat){
@@ -64,26 +61,26 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             Glide.with(mcontext).load(user.getImageURL()).into(holder.profile_image);}
 
 
-      if (ischat) {
-          lastMessage(user.getId(),holder.last_msg,holder.unread);
+        if (ischat) {
+            lastMessage(user.getId(),holder.last_msg,holder.unread);
 
 
-          if (user.getStatus().equals("online")) {
-            //  receiver_state=true;
+            if (user.getStatus().equals("online")) {
+                //  receiver_state=true;
                 holder.img_on.setVisibility(View.VISIBLE);
                 holder.img_off.setVisibility(View.GONE);
             } else {
-           //   receiver_state=false;
+                //   receiver_state=false;
                 holder.img_on.setVisibility(View.GONE);
                 holder.img_off.setVisibility(View.VISIBLE);
             }
         }
         else {
-         //   receiver_state=false;
-          holder.last_msg.setVisibility(View.GONE);
+            //   receiver_state=false;
+            holder.last_msg.setVisibility(View.GONE);
 
-          holder.img_on.setVisibility(View.GONE);
-          holder.img_off.setVisibility(View.GONE);
+            holder.img_on.setVisibility(View.GONE);
+            holder.img_off.setVisibility(View.GONE);
         }
 
 
@@ -109,7 +106,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         public ImageView profile_image;
         private ImageView img_on;
         private ImageView img_off;
-       // private RecyclerView alert;
+        // private RecyclerView alert;
 
 
 
@@ -135,25 +132,29 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 msg_unRead=0;
+
+
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Chat chat = snapshot.getValue(Chat.class);
-                     if ( !chat.isSeen()&&chat.getReciver().equals(firebaseUser.getUid())&&chat.getSender().equals(userid)){
-                    msg_unRead++;
-                    unread.setVisibility(View.VISIBLE);
-                    unread.setText(Integer.toString(msg_unRead));
 
-
-                     }
+                    if ( !chat.isSeen()&&chat.getReciver().equals(firebaseUser.getUid())&&chat.getSender().equals(userid)){
+                        msg_unRead++;
+                        unread.setVisibility(View.VISIBLE);
+                        unread.setText(Integer.toString(msg_unRead));
+                        firstUser=userid;
+                    }
                     if(chat.getReciver().equals(firebaseUser.getUid())&&chat.getSender().equals(userid)||
                             chat.getReciver().equals(userid)&&chat.getSender().equals(firebaseUser.getUid())){
                         lastMessage = chat.getMessage();
+
                     }
 
                 }
                 switch (lastMessage){
                     case "default"
-                        :last_msg.setText("No Message");
-                    break;
+                            :last_msg.setText("No Message");
+                        break;
                     default:
                         last_msg.setText(lastMessage);
                         break;
@@ -169,4 +170,3 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     }
 
 }
-
